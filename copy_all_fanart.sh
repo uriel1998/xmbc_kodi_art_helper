@@ -16,7 +16,10 @@ FileCheck=""
 SHASTORE=$(mktemp)
 
 check_files () {
-    file1=$(sha1sum "${1}" | awk '{print $1}')
+    infile="${1}"
+    evalstring=$(printf "sha1sum \"%s\" | awk \'{print \$1 }\'" "${infile}")
+    file1=$(eval "${evalstring}")
+    # file1=$(sha1sum "${1}" | awk '{print $1}')
     isfound=$(grep -c ${file1} "${SHASTORE}")
     if [ $isfound -gt 0 ];then
         FileCheck="SAME"
@@ -38,12 +41,14 @@ symlink_to_mass_folder (){
 # http://stackoverflow.com/questions/29920839/shell-script-to-copy-and-prepend-folder-name-to-files-from-multiple-subdirectori
 # https://stackoverflow.com/questions/9612090/how-to-loop-through-file-names-returned-by-find#9612232
 
-# Currently loops through twice! whoops
+
 echo "$BaseDir"
-bob=$(find "$BaseDir" -type f -name "*fanart*") 
+bob=$(find "${BaseDir}" -type f -name "*fanart*") 
+OIFS=$IFS
+IFS=$'\n'
 for line in `echo "$bob"`
     do
-        echo "$line"
+        echo "${line}"
         filename=$(basename -- "$line")
         FileExt="${filename##*.}"
         echo "Checking sha1sums for duplicates..."
@@ -63,7 +68,7 @@ for line in `echo "$bob"`
             echo "${line} checksum exists, skipping."
         fi
     done
-
+IFS=$OIFS
 rm "${SHASTORE}"
 exit
 
