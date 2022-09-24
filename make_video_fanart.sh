@@ -38,6 +38,11 @@ for vidfile in `echo "$bob"`
 do  
     vidfullfn=$(realpath "${vidfile}")
     viddirrel=$(echo "${vidfullfn}" | sed -e 's!/[^/]*$!!' -e 's!^\./!!')
+    viddir="${viddirrel}"
+    # the above is backwards compatability
+    echo "$viddir"
+    
+    read
     vidbase=$(basename "${vidfullfn}")
     vidbasefilename=${vidbase%.*}
      
@@ -78,7 +83,7 @@ do
     ###########################################################################
     #  Poster
     ###########################################################################
-
+# Needs shifting of filename for seasons in TV show
     if [ -n "$Poster" ];then    
         if [ ! -f "$viddir/poster.jpg" ]; then  
             if [ -f "$viddir/$vidbasefilename.nfo" ];then
@@ -95,13 +100,9 @@ do
                 echo "$l"
                 read
                 s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
-                echo "$s"
-                read
-                # Get frame at 25% as the thumbnail
-                
-                #TODO - THIS IS WHERE THE ERROR IS HAPPENING 
-                
                 ffmpeg -ss $((s / 2)) -y -i "$vidfullfn" -r 1 -frames 1 "$viddir/temp.jpg"
+                echo "check $viddir/temp.jpg"
+                read
                 convert "$viddir/temp.jpg" -resize 500x750^ -gravity center -extent 500x750 "$viddir/poster.jpg"
                 rm "$viddir/temp.jpg"
             fi
