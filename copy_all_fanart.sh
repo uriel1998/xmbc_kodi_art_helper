@@ -53,12 +53,13 @@ for line in `echo "$bob"`
             DestFileName=$(printf "%s/fanart_%05d.%s" "${OutDir}" "${Number}" "${FileExt}")
             while [ -f "${DestFileName}" ];do
                 (( Number++ ))
-                DestFileName=$(printf "%s/fanart_g%05d.%s" "${OutDir}" "${Number}" "${FileExt}")
+                DestFileName=$(printf "%s/fanart_%05d.%s" "${OutDir}" "${Number}" "${FileExt}")
             done
-            echo "COPYING TO ${DestFileName}"
+            #echo "COPYING TO ${DestFileName}"
             cp "${line}" "${DestFileName}"
             FileCheck=""
         else
+            echo "###########################"
             echo "${line} checksum exists, skipping."
         fi
     done
