@@ -56,6 +56,8 @@ export SHASTORE="${XDG_DATA_HOME}/fanart_copier_shastore.txt"
 if [ "${1}" == "--clear" ];then
     shift
     truncate -s 0 "${SHASTORE}"
+    echo "Cleared ${SHASTORE};"
+    echo "If there are files in the output directory they will NOT be checked against."
     exit
 fi
 
