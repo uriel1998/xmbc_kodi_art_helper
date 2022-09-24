@@ -36,16 +36,15 @@ OIFS=$IFS
 IFS=$'\n'
 for vidfile in `echo "$bob"`
 do  
-    
-    viddirrel=$(echo "${vidfile}" | sed -e 's!/[^/]*$!!' -e 's!^\./!!')
-    vidbase=$(basename "${vidfile}")
-    vidbasefilename=${vidbase%.*}
-    if [ "$viddirrel" = "." ];then
-        viddir="$PWD"
-    else
-        viddir="$PWD/$viddirrel"
-    fi
     vidfullfn=$(realpath "${vidfile}")
+    viddirrel=$(echo "${vidfullfn}" | sed -e 's!/[^/]*$!!' -e 's!^\./!!')
+    vidbase=$(basename "${vidfullfn}")
+    vidbasefilename=${vidbase%.*}
+     
+     
+     
+    ### TODO : OUTPUT DIRECTORY NOT RIGHT HERE
+        
     ###########################################################################
     #  Fanart
     ###########################################################################
