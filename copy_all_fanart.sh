@@ -81,7 +81,7 @@ check_files () {
     evalstring=$(printf "sha1sum \"%s\" | awk \'{print \$1 }\'" "${infile}")
     file1=$(eval "${evalstring}")
     # file1=$(sha1sum "${1}" | awk '{print $1}')
-    isfound=$(${grep_bin} -c ${file1} "${SHASTORE}")
+    isfound=$("${grep_bin}" -c "${file1}" "${SHASTORE}")
     if [ -z "$isfound" ];then isfound=0;fi
     if [ $isfound -gt 0 ];then
         FileCheck="SAME"
@@ -91,17 +91,6 @@ check_files () {
     fi
     
 }
-
-symlink_to_mass_folder (){
-    rm -rf /home/steven/documents/static_bkgds_kodi/all_fanart/*
-
-    ln -s -f /home/steven/documents/static_bkgds_kodi/tv/* /home/steven/documents/static_bkgds_kodi/all_fanart/
-    ln -s -f /home/steven/documents/static_bkgds_kodi/concerts/* /home/steven/documents/static_bkgds_kodi/all_fanart/
-    ln -s -f /home/steven/documents/static_bkgds_kodi/movies/* /home/steven/documents/static_bkgds_kodi/all_fanart/
-}
-
-# http://stackoverflow.com/questions/29920839/shell-script-to-copy-and-prepend-folder-name-to-files-from-multiple-subdirectori
-# https://stackoverflow.com/questions/9612090/how-to-loop-through-file-names-returned-by-find#9612232
 
 
 echo "$BaseDir"
