@@ -10,7 +10,8 @@ a specified directory.**
 
 This utility allows you to copy all the fanart from one set of directories to
 another - without having (exact) duplicates by comparing sha1sums. You will 
-end up with a directory full of `fanart_00000.jpg` files (at present). 
+end up with a directory full of `fanart_00000.jpg` files (unless you specify, see
+below). 
 
 The use case here is to have a directory of not (exactly) duplicated fan arts 
 for use as backgrounds, screen wallpaper, a source for screensavers, and so on.
@@ -23,7 +24,15 @@ specify a *different* SHA sum store with a commandline switch. (For example,
 if you wanted to have one output directory that was *just* TV show fanart and 
 another that was TV show fanart *and* movie fanart.
 
-`copy_all_fanart [--shastore /path/to/file] [--clear] /sourcedir /outdir`
+`copy_all_fanart [--shastore /path/to/file] [--clear] /sourcedir /outdir [pattern]` 
+
+For example:
+
+`copy_all_fanart /media/TV /home/steven/wallpapers TV_wallpaper`
+
+would result in the fanart from my TV show store to the directory 
+`/home/steven/wallpapers` with filenames like `TV_wallpaper_000000.jpg` and 
+`TV_wallpaper_000001.jpg`, and so on.
 
 Notes: 
 
@@ -36,6 +45,8 @@ have your **FIRST** commandline switch be `--shastore /full/file/path/to/sha_sto
 are using the default SHASTORE, if you are using a specific one, you must specify 
 the SHASTORE first.
 
+* [pattern] is optional, and your files have that at the beginning of the filename. 
+Do not have whitespace in this pattern.
 
 # Make Video Fanart
 

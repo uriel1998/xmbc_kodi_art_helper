@@ -9,7 +9,7 @@
 #   To get all the fanart from a video directory (e.g. Kodi, Plex, etc) 
 #   and copy it to a specified directory.
 #
-#   copy_all_fanart [--shastore /path/to/file] [--clear] /sourcedir /outdir
+#   copy_all_fanart [--shastore /path/to/file] [--clear] /sourcedir /outdir [PATTERN}
 #   
 #   No trailing slash on paths. 
 #  
@@ -23,6 +23,8 @@
 #  
 #   To clear the SHASTORE in use, pass --clear 
 #
+#   Optionally, use [PATTERN] for the filename pattern before the numbering
+#  
 ##############################################################################
 
 
@@ -59,6 +61,12 @@ fi
 
 BaseDir="$1"
 OutDir="$2"
+Pattern="$3"
+
+if [ "${Pattern}" == "" ];then
+    Pattern="fanart_"
+fi
+
 FileCheck=""
 if [ -f $(which rg) ];then
     grep_bin=$(which rg)
@@ -106,17 +114,16 @@ for line in `echo "$bob"`
         check_files "${line}" "${OutDir}"
         if [ "$FileCheck" != "SAME" ];then
             Number=0
-            DestFileName=$(printf "%s/fanart_%05d.%s" "${OutDir}" "${Number}" "${FileExt}")
+            DestFileName=$(printf "%s/%s%05d.%s" "${OutDir}" "${Pattern}" "${Number}" "${FileExt}")
             while [ -f "${DestFileName}" ];do
                 (( Number++ ))
-                DestFileName=$(printf "%s/fanart_%05d.%s" "${OutDir}" "${Number}" "${FileExt}")
+                DestFileName=$(printf "%s/%s%05d.%s" "${OutDir}" "${Pattern}" "${Number}" "${FileExt}")
             done
             #echo "COPYING TO ${DestFileName}"
             cp "${line}" "${DestFileName}"
             FileCheck=""
         else
-            echo "###########################"
-            echo "${line} checksum exists, skipping."
+            echo "#${line} checksum exists, skipping."
         fi
     done
 IFS=$OIFS
