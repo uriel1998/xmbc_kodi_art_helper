@@ -13,24 +13,18 @@
 BaseDir="$1"
 OutDir="$2"
 FileCheck=""
+SHASTORE=$(mktemp)
 
 check_files () {
     file1=$(sha1sum "${1}" | awk '{print $1}')
-    dir="${2}"
+    isfound=$(grep -c ${file1} "${SHASTORE}")
+    if [ $isfound -gt 0 ];then
+        FileCheck="SAME"
+    else
+        FileCheck=""
+        echo "$file1" >> "${SHASTORE}"
+    fi
     
-    files_to_check=$(ls -A )
-    FileCheck=""
-    bob2=$(find "${2}" -type f) 
-
-    for file2 in `echo "$bob2"`
-    do
-        if [ -f "$file2" ];then 
-            file2=$(sha1sum "$file2" | awk '{print $1}')
-            if [ "$file1" == "$file2" ];then
-                FileCheck="SAME"
-            fi
-        fi
-    done
 }
 
 symlink_to_mass_folder (){
@@ -68,6 +62,8 @@ for line in `echo "$bob"`
             echo "${line} checksum exists, skipping."
         fi
     done
+
+rm "${SHASTORE}"
 exit
 
 
