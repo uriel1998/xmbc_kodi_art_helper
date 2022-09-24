@@ -48,10 +48,9 @@ OIFS=$IFS
 IFS=$'\n'
 for line in `echo "$bob"`
     do
-        echo "${line}"
         filename=$(basename -- "$line")
         FileExt="${filename##*.}"
-        echo "Checking sha1sums for duplicates..."
+        echo "Checking sha1sums of ${line} for duplicates..."
         check_files "${line}" "${OutDir}"
         if [ "$FileCheck" != "SAME" ];then
             Number=0
