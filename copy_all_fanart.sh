@@ -27,14 +27,19 @@ fi
 BaseDir="$1"
 OutDir="$2"
 FileCheck=""
-
+if [ -f $(which rg) ];then
+    grep_bin=$(which rg)
+else
+    grep_bin=$(which grep)
+fi
 
 check_files () {
     infile="${1}"
     evalstring=$(printf "sha1sum \"%s\" | awk \'{print \$1 }\'" "${infile}")
     file1=$(eval "${evalstring}")
     # file1=$(sha1sum "${1}" | awk '{print $1}')
-    isfound=$(grep -c ${file1} "${SHASTORE}")
+    isfound=$(${grep_bin} -c ${file1} "${SHASTORE}")
+    if [ -z "$isfound" ];then isfound=0;fi
     if [ $isfound -gt 0 ];then
         FileCheck="SAME"
     else
