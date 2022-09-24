@@ -35,7 +35,8 @@ bob=$(find "${BaseDir}" -iname "*.mp4" -or -iname "*.mp4" -or -iname "*.mkv" -or
 OIFS=$IFS
 IFS=$'\n'
 for vidfile in `echo "$bob"`
-do    
+do  
+    
     viddirrel=$(echo "${vidfile}" | sed -e 's!/[^/]*$!!' -e 's!^\./!!')
     vidbase=$(basename "${vidfile}")
     vidbasefilename=${vidbase%.*}
@@ -44,7 +45,7 @@ do
     else
         viddir="$PWD/$viddirrel"
     fi
-    vidfullfn="$viddir/$vidbase"
+    vidfullfn=$(realpath "${vidfile}")
     ###########################################################################
     #  Fanart
     ###########################################################################
@@ -92,8 +93,15 @@ do
             else
                 l=$(ffmpeg -i "$vidfullfn" 2>&1 | grep Duration: | sed -r 's/\..*//;s/.*: //;s/0([0-9])/\1/g')
                 # Convert that into seconds
+                echo "$l"
+                read
                 s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
+                echo "$s"
+                read
                 # Get frame at 25% as the thumbnail
+                
+                #TODO - THIS IS WHERE THE ERROR IS HAPPENING 
+                
                 ffmpeg -ss $((s / 2)) -y -i "$vidfullfn" -r 1 -frames 1 "$viddir/temp.jpg"
                 convert "$viddir/temp.jpg" -resize 500x750^ -gravity center -extent 500x750 "$viddir/poster.jpg"
                 rm "$viddir/temp.jpg"
