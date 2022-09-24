@@ -36,9 +36,9 @@
 				else
 					l=$(ffmpeg -i "$vidfullfn" 2>&1 | grep Duration: | sed -r 's/\..*//;s/.*: //;s/0([0-9])/\1/g')
 					# Convert that into seconds
-					s=$((($(cut -f1 -d: <<< $l) * 60 + $(cut -f2 -d: <<< $l)) * 60 + $(cut -f3 -d: <<< $l)))
+					s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
 					# Get frame at 25% as the thumbnail
-					ffmpeg -ss $((s / 2)) -y -i "$vidfullfn" -r 1 -updatefirst 1 -frames 1 "$viddir/temp.jpg"
+					ffmpeg -ss $((s / 2)) -y -i "$vidfullfn" -r 1 -frames 1 "$viddir/temp.jpg"
 					convert "$viddir/temp.jpg" -resize 500x750^ -gravity center -extent 500x750 "$viddir/poster.jpg"
 					rm "$viddir/temp.jpg"
 				fi
