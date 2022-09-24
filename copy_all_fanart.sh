@@ -10,10 +10,24 @@
 ########################################################################
 
 
+if [ ! -d "${XDG_DATA_HOME}" ];then
+    export XDG_DATA_HOME="${HOME}/.local/share"
+fi
+
+# I want this persistent so I can put multiple runs in it.
+export SHASTORE="${XDG_DATA_HOME}/fanart_copier_shastore.txt"
+
+
+# mechanism to clear the SHASTORE
+if [ "${1}" == "--clear" ];then
+    shift
+    truncate -s 0 
+fi
+
 BaseDir="$1"
 OutDir="$2"
 FileCheck=""
-SHASTORE=$(mktemp)
+
 
 check_files () {
     infile="${1}"
