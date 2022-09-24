@@ -54,6 +54,7 @@ export SHASTORE="${XDG_DATA_HOME}/fanart_copier_shastore.txt"
 if [ "${1}" == "--clear" ];then
     shift
     truncate -s 0 "${SHASTORE}"
+    exit
 fi
 
 BaseDir="$1"
