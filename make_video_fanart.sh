@@ -54,18 +54,8 @@ do
     #  Fanart
     ###########################################################################
     if [ -n "$Fanart" ];then
-        # You don't have fanart IN the Season folders
-        
-        
-        # the below line needs to change once I'm done coding it.
-        if [[ "${viddir}" == *"Season"* ]];then 
-            # If it's in a Season folder, then create a season02-fanart
-            # season02-poster
-            # if there is a series one of either, just copy that shiz
-            
-        
-        
-        fi
+        # You don't have fanart for the Season folders
+        # Honestly, you probably do NOT want to use this unless you HAVE to
         if [[ "${viddir}" != *"Season"* ]];then 
             if [ -f "$vidfullfn" ];then
                 if [ ! -f "$viddir/fanart.jpg" ]; then  
@@ -96,6 +86,24 @@ do
     ###########################################################################
 # Needs shifting of filename for seasons in TV show
     if [ -n "$Poster" ];then    
+        # the below line needs to change once I'm done coding it.
+        if [[ "${viddir}" == *"Season"* ]];then 
+            # If it's in a Season folder, then create a season02-fanart
+            # season02-poster
+            # if there is a series one of either, just copy that shiz
+            # get the last part of dir name
+            # remove underscore
+            # tolower
+            # does poster.jpg exist? 
+            #   if not, create from video
+            # does season01-poster.jpg exist?
+            #   if not, and poster.jpg exists, copy poster.jpg
+            
+        
+        fi
+
+
+
         if [ ! -f "$viddir/poster.jpg" ]; then  
             if [ -f "$viddir/$vidbasefilename.nfo" ];then
                 title=$(cat "$viddir/$vidbasefilename.nfo"| grep -oPm1 "(?<=<title>)[^<]+")
