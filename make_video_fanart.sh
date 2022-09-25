@@ -88,6 +88,14 @@ do
     if [ -n "$Poster" ];then    
         # the below line needs to change once I'm done coding it.
         if [[ "${viddir}" == *"Season"* ]];then 
+            vid1updir=$(find .. -maxdepth 1 -type d -name '..' -print0 | xargs --null -I {} realpath {})
+            # Transforms Season-01 (or some variants) into season01
+            diff_dir=$(echo ${viddir#${vid1updir}} | tr -d '\_ /' | tr '[:upper:]' '[:lower:]')
+            if [ -f "${vid1updir}"/poster.jpg ];then 
+                cp "${vid1updir}"/poster.jpg "${vid1updir}"/"${diff_dir}"-poster.jpg
+            else
+            
+            
             # If it's in a Season folder, then create a season02-fanart
             # season02-poster
             # if there is a series one of either, just copy that shiz
