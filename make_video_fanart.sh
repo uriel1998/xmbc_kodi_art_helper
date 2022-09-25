@@ -55,7 +55,18 @@ do
     ###########################################################################
     if [ -n "$Fanart" ];then
         # You don't have fanart IN the Season folders
-        if [[ ${viddir} != *"Season"* ]];then 
+        
+        
+        # the below line needs to change once I'm done coding it.
+        if [[ "${viddir}" == *"Season"* ]];then 
+            # If it's in a Season folder, then create a season02-fanart
+            # season02-poster
+            # if there is a series one of either, just copy that shiz
+            
+        
+        
+        fi
+        if [[ "${viddir}" != *"Season"* ]];then 
             if [ -f "$vidfullfn" ];then
                 if [ ! -f "$viddir/fanart.jpg" ]; then  
                     echo "Didn't find $viddir/fanart.jpg"
