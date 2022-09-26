@@ -41,8 +41,6 @@ do
     viddir="${viddirrel}"
     # the above is backwards compatability
     echo "$viddir"
-    
-    read
     vidbase=$(basename "${vidfullfn}")
     vidbasefilename=${vidbase%.*}
      
