@@ -12,6 +12,7 @@
 #   --thumbnail
 #   --fanart
 #   --poster
+#   --all
 ##############################################################################
     
 BaseDir="$1"
@@ -28,6 +29,12 @@ if [[ "$@" =~ "--thumbnail" ]];then
 fi
 if [[ "$@" =~ "--poster" ]];then
     Poster=1
+fi
+
+if [[ "$@" =~ "--all" ]];then
+    Poster=1
+    Thumbnail=1
+    Fanart=1 
 fi
        
 bob=$(find "${BaseDir}" -iname "*.mp4" -or -iname "*.mp4" -or -iname "*.mkv" -or -iname "*.mpeg" -or -iname "*.avi" -or -iname "*.mov" -or -iname "*.mkv" -or -iname "*.webm" -or -iname "*.wmv"  | sort -u )
@@ -79,6 +86,9 @@ do
             cp "${viddir}"/fanart.jpg "${viddir}"/"${vidbasefilename}"-fanart.jpg
         fi
     fi
+
+
+# Why did I not get a poster for the film?
 
     ###########################################################################
     #  Poster
