@@ -135,29 +135,36 @@ do
             fi
         else
             # No season, which means it's probably a movie.
-            # Creating from fanart,if it exists.
-            if [ -f "${viddir}"/fanart.jpg ]; then
-                convert "${viddir}"/fanart.jpg" -resize 500x750^ -gravity center -extent 500x750 "${viddir}"/poster.jpg"
-            else
-            # And no fanart either. Le sigh. Creating from video.
-                l=$(ffmpeg -i "$vidfullfn" 2>&1 | grep Duration: | sed -r 's/\..*//;s/.*: //;s/0([0-9])/\1/g')
-                # Convert that into seconds
-                s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
-                ffmpeg -ss $((s / 2)) -y -i "${vidfullfn}" -r 1 -frames 1 "${viddir}"/temp.jpg
-                convert "${viddir}"/temp.jpg -resize 500x750^ -gravity center -extent 500x750 "${viddir}"/poster.jpg
-                rm "${viddir}"/temp.jpg
-                # If we created the poster, add the TV Show name if it can be found 
-                # in .nfo. Otherwise, do not make a name variant.
-                if [ -f "$viddir/$vidbasefilename.nfo" ];then
-                    title=""
-                    title=$(cat "$viddir/$vidbasefilename.nfo"| grep -oPm1 "(?<=<title>)[^<]+")
-                    if [ -n "${title}" ];then 
-                        convert "$viddir/poster.jpg" -gravity South -pointsize 25 -fill white -annotate +0+30  "$title" "$viddir/poster_title.jpg"; 
-                        rm "$viddir/poster.jpg"
-                        cp "$viddir/poster_title.jpg" "$viddir/$vidbasefilename-poster.jpg"
-                        cp "$viddir/poster_title.jpg" "$viddir/poster.jpg"
-                        rm "$viddir/poster_title.jpg"               
-                    fi  
+            # Is there a poster?
+            if [ ! -f "${viddir}/${vidbasefilename}-poster.jpg"            
+                if [ -f "${viddir}"/poster.jpg ];then
+                    cp "${viddir}"/poster.jpg "${viddir}/${vidbasefilename}-poster.jpg"
+                else
+                    # Fine, no poster.
+                    # Creating from fanart,if it exists.
+                    if [ -f "${viddir}"/fanart.jpg ]; then
+                        convert "${viddir}"/fanart.jpg" -resize 500x750^ -gravity center -extent 500x750 "${viddir}"/poster.jpg"
+                    else
+                        # And no fanart either. Le sigh. Creating from video.
+                        l=$(ffmpeg -i "$vidfullfn" 2>&1 | grep Duration: | sed -r 's/\..*//;s/.*: //;s/0([0-9])/\1/g')
+                        # Convert that into seconds
+                        s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
+                        ffmpeg -ss $((s / 2)) -y -i "${vidfullfn}" -r 1 -frames 1 "${viddir}"/temp.jpg
+                        convert "${viddir}"/temp.jpg -resize 500x750^ -gravity center -extent 500x750 "${viddir}"/poster.jpg
+                        rm "${viddir}"/temp.jpg
+                        # If we created the poster, add the TV Show name if it can be found 
+                        # in .nfo. Otherwise, do not make a name variant.
+                    if [ -f "$viddir/$vidbasefilename.nfo" ];then
+                        title=""
+                        title=$(cat "$viddir/$vidbasefilename.nfo"| grep -oPm1 "(?<=<title>)[^<]+")
+                        if [ -n "${title}" ];then 
+                            convert "$viddir/poster.jpg" -gravity South -pointsize 25 -fill white -annotate +0+30  "$title" "$viddir/poster_title.jpg"; 
+                            rm "$viddir/poster.jpg"
+                            cp "$viddir/poster_title.jpg" "${viddir}/${vidbasefilename}-poster.jpg"
+                            cp "$viddir/poster_title.jpg" "$viddir/poster.jpg"
+                            rm "$viddir/poster_title.jpg"               
+                        fi  
+                    fi
                 fi
             fi
         fi
