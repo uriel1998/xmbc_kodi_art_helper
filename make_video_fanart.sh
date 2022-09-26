@@ -72,8 +72,6 @@ do
             fi
             #Test for size
             fanartsize=$(identify "$viddir"/fanart.jpg | awk '{print $3}')
-    #           echo "$fanartsize"
-    #           read
             if [ "$fanartsize" != "1920x1080" ];then
                 echo "Resizing fanart in $viddir"
                 convert "$viddir/fanart.jpg" -resize 1920x1080^ -gravity center -extent 1920x1080 "$viddir/fanart.jpg"
@@ -84,7 +82,6 @@ do
     ###########################################################################
     #  Poster
     ###########################################################################
-# Needs shifting of filename for seasons in TV show
     if [ -n "$Poster" ];then    
         
         if [[ "${viddir}" == *"Season"* ]];then 
@@ -107,6 +104,19 @@ do
                     convert "${vid1updir}"/temp.jpg -resize 500x750^ -gravity center -extent 500x750 "${vid1updir}"/poster.jpg
                     cp "${vid1updir}"/temp.jpg "${vid1updir}"/"${diff_dir}"-poster.jpg
                     rm "${vid1updir}"/temp.jpg
+                    # If we created the poster, add the TV Show name if it can be found 
+                    # in .nfo. Otherwise, do not make a name variant.
+                    # Note - this only does this for the SHOW poster, if it was created.
+                    if [ -f "${vid1updir}"/tvshow.nfo ];then
+                        title=""
+                        title=$(cat "${vid1updir}"/tvshow.nfo | grep -oPm1 "(?<=<title>)[^<]+")
+                        if [ -n "${title}" ];then 
+                            convert "${vid1updir}"/poster.jpg -gravity South -pointsize 25 -fill white -annotate +0+30  "$title" "${vid1updir}"/poster_title.jpg; 
+                            rm "${vid1updir}"/poster.jpg
+                            cp "${vid1updir}"/poster_title.jpg "${vid1updir}"/poster.jpg
+                            rm "${vid1updir}"/poster_title.jpg
+                        fi  
+                    fi
                 fi
             fi
         else
@@ -119,39 +129,23 @@ do
                 l=$(ffmpeg -i "$vidfullfn" 2>&1 | grep Duration: | sed -r 's/\..*//;s/.*: //;s/0([0-9])/\1/g')
                 # Convert that into seconds
                 s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
-                ffmpeg -ss $((s / 2)) -y -i "${vidfullfn}" -r 1 -frames 1 "${vid1updir}"/temp.jpg
-                convert "${vid1updir}"/temp.jpg -resize 500x750^ -gravity center -extent 500x750 "${vid1updir}"/poster.jpg
-                cp "${vid1updir}"/temp.jpg "${vid1updir}"/"${diff_dir}"-poster.jpg
-                rm "${vid1updir}"/temp.jpg
+                ffmpeg -ss $((s / 2)) -y -i "${vidfullfn}" -r 1 -frames 1 "${viddir}"/temp.jpg
+                convert "${viddir}"/temp.jpg -resize 500x750^ -gravity center -extent 500x750 "${viddir}"/poster.jpg
+                cp "${viddir}"/temp.jpg "${vid1updir}"/"${diff_dir}"-poster.jpg
+                rm "${viddir}"/temp.jpg
+                # If we created the poster, add the TV Show name if it can be found 
+                # in .nfo. Otherwise, do not make a name variant.
+                if [ -f "$viddir/$vidbasefilename.nfo" ];then
+                    title=""
+                    title=$(cat "$viddir/$vidbasefilename.nfo"| grep -oPm1 "(?<=<title>)[^<]+")
+                    if [ -n "${title}" ];then 
+                        convert "$viddir/poster.jpg" -gravity South -pointsize 25 -fill white -annotate +0+30  "$title" "$viddir/poster_title.jpg"; 
+                        rm "$viddir/poster.jpg"
+                        cp "$viddir/poster_title.jpg" "$viddir/poster.jpg"
+                        rm "$viddir/poster_title.jpg"               
+                    fi  
+                fi
             fi
-
-# This adds a name to the poster, which I'm not sure I want to do.
-
-        if [ ! -f "$viddir/poster.jpg" ]; then  
-            if [ -f "$viddir/$vidbasefilename.nfo" ];then
-                title=$(cat "$viddir/$vidbasefilename.nfo"| grep -oPm1 "(?<=<title>)[^<]+")
-            else
-                title=$vidbasefilename
-            fi
-            echo "Creating poster for $title"               
-            if [ -f "$viddir/fanart.jpg" ]; then
-                convert "$viddir/fanart.jpg" -resize 500x750^ -gravity center -extent 500x750 "$viddir/poster.jpg"
-            else
-                l=$(ffmpeg -i "$vidfullfn" 2>&1 | grep Duration: | sed -r 's/\..*//;s/.*: //;s/0([0-9])/\1/g')
-                # Convert that into seconds
-                echo "$l"
-                read
-                s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
-                ffmpeg -ss $((s / 2)) -y -i "$vidfullfn" -r 1 -frames 1 "$viddir/temp.jpg"
-                echo "check $viddir/temp.jpg"
-                read
-                convert "$viddir/temp.jpg" -resize 500x750^ -gravity center -extent 500x750 "$viddir/poster.jpg"
-                rm "$viddir/temp.jpg"
-            fi
-            convert "$viddir/poster.jpg" -gravity South -pointsize 25 -fill white -annotate +0+30  "$title" "$viddir/poster_title.jpg"; 
-            rm "$viddir/poster.jpg"
-            cp "$viddir/poster_title.jpg" "$viddir/poster.jpg"
-            rm "$viddir/poster_title.jpg"               
         fi
     fi
     
