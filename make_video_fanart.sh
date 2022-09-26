@@ -55,22 +55,28 @@ do
             if [ -f "$vidfullfn" ];then
                 if [ ! -f "$viddir/fanart.jpg" ]; then  
                     echo "Didn't find $viddir/fanart.jpg"
-                    echo "Creating thumbnail"
-                    # from http://superuser.com/questions/238073/make-thumbnail-from-video
-                    # Get the time as h:m:s (non-padded)
-                    l=$(ffmpeg -i "$vidfullfn" 2>&1 | grep Duration: | sed -r 's/\..*//;s/.*: //;s/0([0-9])/\1/g')
-                    # Convert that into seconds
-                    s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
-                    # Get frame at 25% as the thumbnail
-                    ffmpeg -ss $((s / 2)) -y -i "$vidfullfn" -r 1 -frames 1 "$viddir/fanart.jpg"
+                    if [ -f "${viddir}"/"${vidbasefilename}"-fanart.jpg ];then
+                        echo "Using individually named fanart file."
+                        cp "${viddir}"/"${vidbasefilename}"-fanart.jpg "${viddir}"/fanart.jpg
+                    else
+                        echo "Creating thumbnail"
+                        # from http://superuser.com/questions/238073/make-thumbnail-from-video
+                        # Get the time as h:m:s (non-padded)
+                        l=$(ffmpeg -i "$vidfullfn" 2>&1 | grep Duration: | sed -r 's/\..*//;s/.*: //;s/0([0-9])/\1/g')
+                        # Convert that into seconds
+                        s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
+                        # Get frame at 25% as the thumbnail
+                        ffmpeg -ss $((s / 2)) -y -i "$vidfullfn" -r 1 -frames 1 "$viddir/fanart.jpg"
+                    fi
                 fi
             fi
             #Test for size
-            fanartsize=$(identify "$viddir"/fanart.jpg | awk '{print $3}')
+            fanartsize=$(identify "${viddir}"/fanart.jpg | awk '{print $3}')
             if [ "$fanartsize" != "1920x1080" ];then
                 echo "Resizing fanart in $viddir"
-                convert "$viddir/fanart.jpg" -resize 1920x1080^ -gravity center -extent 1920x1080 "$viddir/fanart.jpg"
+                convert "${viddir}"/fanart.jpg -resize 1920x1080^ -gravity center -extent 1920x1080 "${viddir}"/fanart.jpg
             fi  
+            cp "${viddir}"/fanart.jpg "${viddir}"/"${vidbasefilename}"-fanart.jpg
         fi
     fi
 
@@ -138,6 +144,7 @@ do
                     if [ -n "${title}" ];then 
                         convert "$viddir/poster.jpg" -gravity South -pointsize 25 -fill white -annotate +0+30  "$title" "$viddir/poster_title.jpg"; 
                         rm "$viddir/poster.jpg"
+                        cp "$viddir/poster_title.jpg" "$viddir/$vidbasefilename-poster.jpg"
                         cp "$viddir/poster_title.jpg" "$viddir/poster.jpg"
                         rm "$viddir/poster_title.jpg"               
                     fi  
