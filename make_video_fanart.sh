@@ -44,16 +44,13 @@ do
     vidbase=$(basename "${vidfullfn}")
     vidbasefilename=${vidbase%.*}
      
-     
-     
-    ### TODO : OUTPUT DIRECTORY NOT RIGHT HERE
-        
     ###########################################################################
     #  Fanart
     ###########################################################################
     if [ -n "$Fanart" ];then
         # You don't have fanart for the Season folders
         # Honestly, you probably do NOT want to use this unless you HAVE to
+        # There's SO MUCH good fanart freely accessible out there, but...
         if [[ "${viddir}" != *"Season"* ]];then 
             if [ -f "$vidfullfn" ];then
                 if [ ! -f "$viddir/fanart.jpg" ]; then  
@@ -81,8 +78,10 @@ do
     #  Poster
     ###########################################################################
     if [ -n "$Poster" ];then    
-        
-        if [[ "${viddir}" == *"Season"* ]];then 
+        if [[ "${viddir}" == *"Season"* ]];then
+            RunTimeDir=$(echo "${PWD}")
+            cd "${viddir}"
+            # This trick requires you to be in the referred directory.
             vid1updir=$(find .. -maxdepth 1 -type d -name '..' -print0 | xargs --null -I {} realpath {})
             # Transforms Season-01 (or some variants) into season01
             diff_dir=$(echo ${viddir#${vid1updir}} | tr -d '\_ /' | tr '[:upper:]' '[:lower:]')
@@ -116,6 +115,7 @@ do
                         fi  
                     fi
                 fi
+            cd "${RunTimeDir}"
             fi
         else
             # No season, which means it's probably a movie.
@@ -129,7 +129,6 @@ do
                 s=$((($(cut -f1 -d: <<< "$l") * 60 + $(cut -f2 -d: <<< "$l")) * 60 + $(cut -f3 -d: <<< "$l")))
                 ffmpeg -ss $((s / 2)) -y -i "${vidfullfn}" -r 1 -frames 1 "${viddir}"/temp.jpg
                 convert "${viddir}"/temp.jpg -resize 500x750^ -gravity center -extent 500x750 "${viddir}"/poster.jpg
-                cp "${viddir}"/temp.jpg "${vid1updir}"/"${diff_dir}"-poster.jpg
                 rm "${viddir}"/temp.jpg
                 # If we created the poster, add the TV Show name if it can be found 
                 # in .nfo. Otherwise, do not make a name variant.
