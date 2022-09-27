@@ -2,7 +2,6 @@
 
 Scripts to help with fanart and movie posters for Kodi/XMBC
 
-
 # Copy All Fanart
 
 **To get all the fanart from a video directory (e.g. Kodi, Plex) and copy it to 
